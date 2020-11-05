@@ -2,24 +2,27 @@ const request = require('request');
 const fs  = require('fs');
 const { argv } = require('process');
 
-const breedFinder = (breedName) => {
 
+
+const fetchBreedDescription = function(breedName, callback) {
   request(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (err, response, body) => {
-    
-  if(err){
-    return console.log(err)
-  }
 
-  if(body === "[]"){
-        return console.log("Hey! Thats not a cat! NO! BAD USER!")
-      }
+    if  (err) {
+      callback(err.message, null);
+      return; 
+    }
+    if  (body === "[]") {
+      callback("Hey! Thats not a cat! NO! BAD USER!", null);
+      return;
+    }
     const data = JSON.parse(body);
+    callback(null, data[0].description);
+    return;
+  });
+};
 
-    console.log(data[0].description)
-  })
-}
 
-let args = process.argv.slice(2)
-let breedName = args[0]
 
-breedFinder(breedName)
+  
+module.exports = fetchBreedDescription;
+
